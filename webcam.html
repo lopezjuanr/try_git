@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Webcam test</title>
+
+	<script type="text/javascript">
+	function loadstream(stream) {
+		console.log(stream);
+		video = document.getElementById("webcam");
+		video.src = window.URL.createObjectURL(stream);
+		//video.play(); works, but moved to video ready handler
+		video.onloadedmetadata = video_loaded;
+	}
+
+	function error(error) {
+		console.log(error);
+	}
+
+	function video_loaded(e) {
+		console.log("video loaded");
+		console.log(e);
+		video = document.getElementById("webcam");
+		video.play();
+	}
+
+	function start() {
+		/* API reference: 
+		## Webcam html5
+https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia	
+		Little article about it more in depth:
+		http://www.html5rocks.com/en/tutorials/getusermedia/intro/
+		*/	
+		constraints = {video: true}
+		if(navigator.MediaDevices)
+			navigator.MediaDevices.getUserMedia(constraints)
+			.then(loadstream)
+			.catch(error);
+		else {
+			navigator.getMedia = ( navigator.getUserMedia ||
+                           navigator.webkitGetUserMedia ||
+                           navigator.mozGetUserMedia ||
+                           navigator.msGetUserMedia);
+
+			navigator.getMedia(constraints, loadstream, error);
+		}
+	}
+	</script>
+</head>
+<body onload="start()">
+<video id="webcam"></video>
+</body>
+</html>
